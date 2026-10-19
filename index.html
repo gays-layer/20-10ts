@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffccd5 50%, #ffb3c1 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .font-vibe {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .font-cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Canvas Cánh hoa rơi */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .text-pink-gradient {
+            background: linear-gradient(45deg, #e11d48, #ff758f, #c026d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Cấu trúc Envelope & Ảnh */
+        .envelope-container {
+            position: relative;
+            width: 260px;
+            height: 170px;
+            margin: 0 auto;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        @media (min-width: 640px) {
+            .envelope-container {
+                width: 320px;
+                height: 210px;
+            }
+        }
+
+        /* Phong thư gốc */
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: #ff4d6d;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(225, 29, 72, 0.2);
+        }
+
+        /* Mặt sau phong thư */
+        .envelope-back {
+            position: absolute;
+            inset: 0;
+            background-color: #e63946;
+            border-radius: 10px;
+            z-index: 1;
+        }
+
+        /* Bức ảnh giấu bên trong phong thư */
+        .photo-card {
+            position: absolute;
+            bottom: 8px;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            z-index: 2;
+            /* Đóng: Bức ảnh trượt xuống trước (0s delay), chuyển z-index sau */
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0s, z-index 0s linear 0.6s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        /* Mặt trước phong thư */
+        .envelope-front {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 130px solid #ff758f;
+            border-right: 130px solid #ff758f;
+            border-top: 85px solid transparent;
+            border-bottom: 85px solid #ff758f;
+            border-radius: 10px;
+            z-index: 3;
+            pointer-events: none;
+        }
+        @media (min-width: 640px) {
+            .envelope-front {
+                border-left-width: 160px;
+                border-right-width: 160px;
+                border-top-width: 105px;
+                border-bottom-width: 105px;
+            }
+        }
+
+        /* Nắp phong thư */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 130px solid transparent;
+            border-right: 130px solid transparent;
+            border-top: 90px solid #c9184a;
+            transform-origin: top;
+            /* Đóng: Nắp thư chờ ảnh thụt xuống rồi mới đóng (0.4s delay) */
+            transition: transform 0.5s ease-in-out 0.4s, z-index 0.5s ease-in-out 0.4s;
+            z-index: 4;
+            pointer-events: none;
+        }
+        @media (min-width: 640px) {
+            .envelope-flap {
+                border-left-width: 160px;
+                border-right-width: 160px;
+                border-top-width: 110px;
+            }
+        }
+
+        /* Khi MỞ THƯ (.open) */
+        /* Mở: Nắp thư bật lên trước (0s delay) */
+        .envelope-container.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+            transition: transform 0.5s ease-in-out 0s, z-index 0.5s ease-in-out 0s;
+        }
+
+        /* Mở: Ảnh trượt lên sau khi nắp đã mở (0.3s delay) */
+        .envelope-container.open .photo-card {
+            transform: translateY(-90px) scale(1.02);
+            z-index: 5;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s, z-index 0s linear 0.3s;
+        }
+        @media (min-width: 640px) {
+            .envelope-container.open .photo-card {
+                transform: translateY(-110px) scale(1.05);
+            }
+        }
+
+        /* Khung lời chúc xuất hiện bên dưới */
+        .wish-box {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease 0s, transform 0.4s ease 0s;
+            pointer-events: none;
+        }
+
+        .wish-box.show {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
+            pointer-events: auto;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 25px rgba(225, 29, 72, 0.12);
+        }
+    </style>
+</head>
+<body class="relative text-gray-800">
+
+    <!-- Canvas Cánh hoa rơi -->
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Khung chính căn giữa màn hình -->
+    <div class="relative z-10 w-full max-w-lg text-center my-auto flex flex-col justify-center items-center">
+
+        <!-- Tiêu đề -->
+        <div class="overflow-visible">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-vibe text-pink-gradient leading-tight py-1 px-2 drop-shadow-sm">
+                Happy Women's Day
+            </h1>
+        </div>
+        
+        <p id="hint-text" class="text-gray-600 text-xs sm:text-sm mb-16 font-medium tracking-wide">
+            ✨ Bấm vào phong thư để mở ra ✨
+        </p>
+
+        <!-- PHONG THƯ -->
+        <div id="envelope-box" class="envelope-container" onclick="handleEnvelopeClick()">
+            <div class="envelope">
+                <div class="envelope-back"></div>
+                
+                <!-- BỨC ẢNH GẮN ĐƯỜNG DẪN TRỰC TIẾP -->
+                <div class="photo-card">
+                    <img id="custom-img" 
+                         src="C:\Users\Admin\Documents\2011\image\download.png" 
+                         onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80'" 
+                         alt="Hình ảnh kỷ niệm mừng ngày Phụ nữ Việt Nam 20/10">
+                </div>
+
+                <div class="envelope-front"></div>
+                <div class="envelope-flap"></div>
+            </div>
+        </div>
+
+        <!-- ĐOẠN LỜI CHÚC HIỂN THỊ BÊN DƯỚI -->
+        <div id="wish-message" class="wish-box mt-4 p-4 rounded-xl glass-card text-center w-full max-w-sm sm:max-w-md">
+            <p class="font-cursive text-base sm:text-lg text-rose-700 leading-relaxed font-semibold">
+                "Nhân ngày Phụ nữ Việt Nam 20/10, chúc bạn luôn xinh đẹp, rực rỡ và đong đầy hạnh phúc. Mong mọi điều ngọt ngào và bình an nhất sẽ luôn đồng hành cùng bạn!"
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // Xử lý sự kiện bấm vào phong thư
+        let isOpen = false;
+        function handleEnvelopeClick() {
+            const envelopeBox = document.getElementById('envelope-box');
+            const hintText = document.getElementById('hint-text');
+            const wishMessage = document.getElementById('wish-message');
+            
+            isOpen = !isOpen;
+            
+            if (isOpen) {
+                envelopeBox.classList.add('open');
+                wishMessage.classList.add('show');
+                hintText.innerText = '✨ Bấm lần nữa để đóng thư ✨';
+            } else {
+                envelopeBox.classList.remove('open');
+                wishMessage.classList.remove('show');
+                hintText.innerText = '✨ Bấm vào phong thư để mở ra ✨';
+            }
+        }
+
+        // Hiệu ứng cánh hoa rơi
+        const canvasBg = document.getElementById('canvas-bg');
+        const ctxBg = canvasBg.getContext('2d');
+        let width, height;
+        let petals = [];
+
+        function resizeBgCanvas() {
+            width = canvasBg.width = window.innerWidth;
+            height = canvasBg.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeBgCanvas);
+        resizeBgCanvas();
+
+        class Petal {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height - height;
+                this.size = Math.random() * 10 + 6;
+                this.speedY = Math.random() * 1.2 + 0.6;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.angle = Math.random() * 360;
+                this.spin = Math.random() * 2 - 1;
+                this.color = ['#ffb3c1', '#ff4d6d', '#ff758f', '#ff8fa3'][Math.floor(Math.random() * 4)];
+                this.opacity = Math.random() * 0.7 + 0.3;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y / 30) + this.speedX;
+                this.angle += this.spin;
+                if (this.y > height) {
+                    this.y = -20;
+                    this.x = Math.random() * width;
+                }
+            }
+            draw() {
+                ctxBg.save();
+                ctxBg.translate(this.x, this.y);
+                ctxBg.rotate((this.angle * Math.PI) / 180);
+                ctxBg.globalAlpha = this.opacity;
+                ctxBg.fillStyle = this.color;
+                ctxBg.beginPath();
+                ctxBg.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+                ctxBg.fill();
+                ctxBg.restore();
+            }
+        }
+
+        for (let i = 0; i < 35; i++) {
+            petals.push(new Petal());
+        }
+
+        function animateBg() {
+            ctxBg.clearRect(0, 0, width, height);
+            petals.forEach(petal => {
+                petal.update();
+                petal.draw();
+            });
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+    </script>
+</body>
+</html>
